@@ -1,0 +1,109 @@
+const int pinoSensor = A2; //PINO ANALÓGICO EM QUE O SENSOR ESTÁ CONECTADO
+
+float tensaoEntrada = 0.0; //VARIÁVEL PARA ARMAZENAR O VALOR DE TENSÃO DE ENTRADA DO SENSOR
+float tensaoMedida = 0.0; //VARIÁVEL PARA ARMAZENAR O VALOR DA TENSÃO MEDIDA PELO SENSOR
+
+float valorR1 = 30000.0; //VALOR DO RESISTOR 1 DO DIVISOR DE TENSÃO
+float valorR2 = 7500.0; // VALOR DO RESISTOR 2 DO DIVISOR DE TENSÃO
+int leituraSensor = 0; //VARIÁVEL PARA ARMAZENAR A LEITURA DO PINO ANALÓGICO
+#define VOLT_CAL 211.6 //VALOR DE CALIBRAÇÃO (DEVE SER AJUSTADO EM PARALELO COM UM MULTÍMETRO)
+#include <Servo.h>
+//declaração de variaveis e bibliotecas
+
+
+Servo myservo;
+Servo myservo1;
+Servo myservo2;
+Servo myservo3;
+Servo myservo4;
+//declaramos um novo servo motor com o nome de myservo
+
+int Senval = 0;
+//declaração da variavel que recebera o valor digital da pressão exercida no sensor de força resistiva
+
+int Senpin = A0;
+//declaração da variavel que vai receber a porta analogica  do sensor de força resistiva
+
+int pos = 0;
+int pos1 = 0;
+int pos2 = 0;
+int pos3 = 0;
+int pos4 = 0;
+
+int forca = 1;
+//variavel que vai simular as entradas
+
+void setup() {
+  pinMode(pinoSensor, INPUT); //DEFINE O PINO COMO ENTRADA
+  Serial.begin(9600); //INICIALIZA A SERIAL
+  myservo.attach(8);
+  myservo1.attach(7);
+  myservo2.attach(6);
+  myservo3.attach(5);
+  myservo4.attach(4);// declaramos a quais pinos digitais do arduino os servo motores estarão atrelados
+  Serial.begin(9600);
+}
+
+void loop() {
+  leituraSensor = analogRead(pinoSensor); //FAZ A LEITURA DO PINO ANALÓGICO E ARMAZENA NA VARIÁVEL O VALOR LIDO
+  tensaoEntrada = (leituraSensor * 5.0) / 1024.0; //VARIÁVEL RECEBE O RESULTADO DO CÁLCULO
+  tensaoMedida = tensaoEntrada / (valorR2 / (valorR1 + valorR2)); //VARIÁVEL RECEBE O VALOR DE TENSÃO DC MEDIDA PELO SENSOR
+
+
+  Senval = analogRead(Senpin); //lemos quanto de pressão esta sendo exercido no sensor
+
+  if (forca == 1) {
+    while (Senval >= 1000 and pos < 181) {
+      //while (laço de repetição) para mover/executar o motor só enquanto  o valor de pressão exercida for maior que 1000u
+      Senval = analogRead(Senpin);
+      Serial.println(Senval);
+
+      if (pos >= 0 && pos <= 180) {
+        pos += 1;
+        myservo.write(pos);              // manda o servo ir para a posição de valor pos
+        delay(20);                       // dellay de 20 milisegundos entre 1o e outro (controle de velocidade
+        Serial.print("Força 1 aplicada");
+      }
+      delay(5);
+      //
+
+    }
+  } else if (forca == 2) {
+    while (Senval >= 1000 and pos < 171) {
+      //while (laço de repetição) para mover/executar o motor só enquanto  o valor de pressão exercida for maior que 1000u
+      Senval = analogRead(Senpin);
+      Serial.println(Senval);
+
+      if (pos1 >= 0 && pos1 <= 170) {
+        pos1 += 2;
+        myservo1.write(pos1);              // manda o servo ir para a posição de valor pos
+        delay(20);                       // dellay de 20 milisegundos entre 1o e outro (controle de velocidade
+        Serial.print("Força 1 aplicada");
+      }
+      delay(5);
+    }
+  } else if (forca = 3) {
+
+    while (Senval >= 1000 and pos2 < 166) {
+      //while (laço de repetição) para mover/executar o motor só enquanto  o valor de pressão exercida for maior que 1000u
+      Senval = analogRead(Senpin);
+      Serial.println(Senval);
+
+      if (pos2 >= 0 && pos2 <= 165) {
+        pos2 += 3;
+        myservo2.write(pos2);              // manda o servo ir para a posição de valor pos
+        delay(20);                       // dellay de 20 milisegundos entre 1o e outro (controle de velocidade
+        Serial.print("Força 1 aplicada");
+      }
+      delay(5);
+    }
+
+  } else {
+    myservo.write(0);
+    myservo1.write(0);
+    myservo2.write(0);
+    myservo3.write(0);
+    myservo4.write(0);
+  }
+}
+
